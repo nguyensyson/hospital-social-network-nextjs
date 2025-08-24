@@ -73,7 +73,6 @@ export function PostsPage() {
   const [showPostDetail, setShowPostDetail] = useState(false)
   const [filteredPosts, setFilteredPosts] = useState(posts)
   const [statusFilter, setStatusFilter] = useState("all")
-  const [timeFilter, setTimeFilter] = useState("all")
 
   const getStatusBadge = (status: string, reports: number) => {
     switch (status) {
@@ -105,31 +104,6 @@ export function PostsPage() {
       filtered = filtered.filter((post) => post.status === statusFilter)
     }
 
-    // Filter by time
-    if (timeFilter !== "all") {
-      const today = new Date().toISOString().split("T")[0]
-      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
-      const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
-      const yearAgo = new Date(new Date().getFullYear() - 1, 0, 1).toISOString().split("T")[0]
-
-      switch (timeFilter) {
-        case "today":
-          filtered = filtered.filter((post) => post.createdAt.split(" ")[0] === today)
-          break
-        case "week":
-          filtered = filtered.filter((post) => post.createdAt.split(" ")[0] >= weekAgo)
-          break
-        case "month":
-          filtered = filtered.filter((post) => post.createdAt.split(" ")[0] >= monthAgo)
-          break
-        case "year":
-          filtered = filtered.filter((post) => post.createdAt.split(" ")[0] >= yearAgo)
-          break
-        default:
-          break
-      }
-    }
-
     setFilteredPosts(filtered)
   }
 
@@ -140,7 +114,7 @@ export function PostsPage() {
 
   useEffect(() => {
     handleSearch()
-  }, [searchTerm, statusFilter, timeFilter])
+  }, [searchTerm, statusFilter])
 
   return (
     <div className="space-y-8">
@@ -167,16 +141,16 @@ export function PostsPage() {
       {/* Search */}
       <Card className="border-0 shadow-md rounded-3xl bg-white">
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Tìm kiếm theo tác giả, nội dung hoặc ID bài viết..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 rounded-2xl border-gray-200 focus-visible:ring-healthcare-primary"
-              />
-            </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Tìm kiếm theo tác giả, nội dung hoặc ID bài viết..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 rounded-2xl border-gray-200 focus-visible:ring-healthcare-primary"
+            />
+          </div>
+          <div className="mt-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full md:w-48 rounded-2xl">
                 <SelectValue placeholder="Trạng thái" />
@@ -186,18 +160,6 @@ export function PostsPage() {
                 <SelectItem value="normal">Bình thường</SelectItem>
                 <SelectItem value="reported">Bị báo cáo</SelectItem>
                 <SelectItem value="hidden">Đã ẩn</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={timeFilter} onValueChange={setTimeFilter}>
-              <SelectTrigger className="w-full md:w-48 rounded-2xl">
-                <SelectValue placeholder="Thời gian" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả thời gian</SelectItem>
-                <SelectItem value="today">Hôm nay</SelectItem>
-                <SelectItem value="week">7 ngày qua</SelectItem>
-                <SelectItem value="month">30 ngày qua</SelectItem>
-                <SelectItem value="year">Năm nay</SelectItem>
               </SelectContent>
             </Select>
           </div>
